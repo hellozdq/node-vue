@@ -1,5 +1,5 @@
 <template>
-	<el-dialog title="" :visible.sync="dialogCardVisible">	
+	<el-dialog title="" :visible.sync="dialogCardVisible">
 		<el-form ref="form" :model="form" label-width="80px">
 		  <el-form-item label="类型">
 			<el-select v-model="form.type" placeholder="请选择活动区域">
@@ -17,7 +17,7 @@
 			<el-input type="textarea" v-model="form.remark"></el-input>
 		  </el-form-item>
 		  <el-form-item>
-			<el-button type="primary" @click="onSubmit" :disabled="disabled">确认</el-button>
+			<el-button type="primary" @click="onSubmit">确认</el-button>
 			<el-button @click="dialogCardVisible=false">取消</el-button>
 		  </el-form-item>
 		</el-form>
@@ -60,11 +60,9 @@ export default {
       onSubmit() {
 		  var that=this;
 			this.form.effectAt=moment(this.form.effectAt).format('YYYY-MM-DD')
-			this.disabled=true;
 			if(!this.form.memoId){
 				this.$http.post("/memo",this.form)
 				.then(function(response){
-					that.disabled=false;
 					that.form.memoId=response.data.memoId;
 					that.form.createAt=response.data.createAt;
 					var backForm={
@@ -74,7 +72,6 @@ export default {
 						that.$emit('dialog',backForm)
 						that.dialogCardVisible=false;
 					}).catch(function(error){
-						that.disabled=false;
 						// err(that,error)
 					})
 			}else{
@@ -92,7 +89,7 @@ export default {
 						// err(that,error)
 					})
 			}
-			
+
       },
     }
   }

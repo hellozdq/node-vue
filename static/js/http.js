@@ -1,27 +1,39 @@
 import axios from 'axios'
-import { Message } from 'element-ui'
+import { Message, Loading } from 'element-ui'
 
 // 创建axios实例
 const http = axios.create({
   baseURL: process.env.BASE_API, // api的base_url
   timeout: 5000 // 请求超时时间
 })
-console.log(process.env.BASE_API)
+let loadingInstance;
 // request拦截器
 http.interceptors.request.use(config => {
+  loadingInstance = Loading.service({ fullscreen: true });
 	return config;
 //   if (store.getters.token) {
 //     config.headers['X-Token'] = getToken() // 让每个请求携带token
 //   }
 //   return config
 }, error => {
+  setTimeout(()=>{
+    loadingInstance.close();
+  },200)
   Promise.reject(error)
 })
 
 // respone拦截器
 http.interceptors.response.use(
-  response => response,
+  response => {
+    	setTimeout(()=>{
+    		loadingInstance.close();
+    	},200)
+    	return Promise.resolve(response)
+   },
   error => {
+    setTimeout(function(){
+      loadingInstance.close();
+    },200)
     // console.log('err' + error)// for debug
 	if(error.response.logout=="401"){
 		Message({
@@ -36,7 +48,7 @@ http.interceptors.response.use(
 		  duration: 5 * 1000
 		})
 	}
-		
+
     return Promise.reject(error)
   })
 // var http={
